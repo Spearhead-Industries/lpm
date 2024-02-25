@@ -10,6 +10,10 @@ Simple package manager for LuaU.
 
 \* definitely not inspired by npm...
 
+## Alternatives
+
+This tool was designed to aide in the production of LuaU/Lune standalone tools, not Roblox games. Use [Wally](https://github.com/UpliftGames/wally) for Roblox games.
+
 ## Installation
 
 ### Aftman (Recommended)

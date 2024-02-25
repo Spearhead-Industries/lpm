@@ -1,0 +1,4 @@
+Objectives for 1.3:
+- Wally/Rotriever compatibility
+- Exclude field in lpm-package.toml
+- Cleanup the code.
