@@ -75,6 +75,16 @@ If no ref is specified, it will use the main branch.
 > [!NOTE]  
 > LPM sees `Spearhead-Industries/test-lpm-package` and `Spearhead-Industries/test-lpm-package@1.0.0` as completely seperate unrelated packages.
 
+After installing the package(s), you can access them with;
+
+```lua
+-- No ref
+local package = require("@lpm/hi");
+
+-- Has ref
+local package = require("@lpm/hi-v1-0-0"); -- Due to darklua limitations, "@" is replaced with "-v" and "." is replaced with "-" within requires.
+```
+
 ### Uninstalling Dependencies: `uninstall`
 
 ```bash
