@@ -60,7 +60,7 @@ return function(argc: number, argv: {string}): number
         run(`darklua process -c ./lpm_build_conf.json {package.entrypoint} ./out/bundled.lua`);
         run(`lune build ./out/bundled.lua -o {BINARY_NAME}`);
 
-        fs.readFile("./lpm_build_conf.json");
+        fs.removeFile("./lpm_build_conf.json");
 
         if table.find(process.args, "--mkarchive") ~= nil then
             if process.os == "windows" then
