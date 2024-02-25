@@ -6,8 +6,6 @@
 
 Simple package manager for LuaU.
 
-**Maintainer:** @plainenglishh
-
 \* definitely not inspired by npm...
 
 ### Alternatives
