@@ -11,13 +11,6 @@ local function nil_if_empty(text: string): string?
     end
 end
 
-local tdef;
-if process.os == "windows" then
-    tdef = process.env["USERPROFILE"]..`/.lpm/.typedefs/`;
-else
-    tdef = `~/.lpm/.typedefs/`;
-end
-
 local function dedent(text: string): string
     --local padding = text:match("^(%w+)%W");
     return text;
@@ -34,11 +27,10 @@ return function(argc: number, argv: {string}): number
     end
 
     local dir = process.cwd:gsub("\\", "/"):split("/");
-    dir = dir[#dir-1];
 
     local package_file = {};
 
-    package_file.name = stdio.prompt("text", "Package Name", dir);
+    package_file.name = stdio.prompt("text", "Package Name",  dir[#dir-1]);
     package_file.version = stdio.prompt("text", "Version", "1.0.0");
     package_file.description = stdio.prompt("text", "Description");
     package_file.entrypoint = stdio.prompt("text", "Entrypoint", "./src/main.lua");
@@ -46,6 +38,7 @@ return function(argc: number, argv: {string}): number
     package_file.author = stdio.prompt("text", "Author(s)");
     package_file.licence = stdio.prompt("text", "Licence", "MIT");
     package_file.dependencies = {};
+    package_file.exclude = {"docs"};
 
     local file = serde.encode("toml", package_file);
 
@@ -60,32 +53,22 @@ return function(argc: number, argv: {string}): number
 
     fs.writeFile("./lpm-package.toml", file);
     process.spawn("lune", {"setup"});
-    
-    if not fs.isDir(tdef.."/".._G.VERSION) then
-        fs.writeDir(tdef.."/".._G.VERSION);
-    end
 
-    fs.writeFile(`{tdef}{_G.VERSION}/def.d.lua`, dedent([[
-        declare _LPM: {
-            name: string,
-            version: string,
-            description: string,
-            entrypoint: string,
-            repository: string,
-            author: string,
-            licence: string
-        };
-    ]]));
+
+    --// Setup .gitignore
 
     if not fs.isFile("./.gitignore") then
         fs.writeFile("./.gitignore", "");
     end
 
-    local gi = fs.readFile("./.gitignore");
-    if string.find(gi, "# LPM") == nil then
-        fs.writeFile("./.gitignore", gi.."\n\n# LPM\n\n/out\n/lpm_modules");
+    local git_ignore = fs.readFile("./.gitignore");
+    if string.find(git_ignore, "# LPM") == nil then
+        fs.writeFile("./.gitignore", git_ignore.."# LPM\n\n/out\n/lpm_modules\n\n");
     end
-    -- luaurc --
+    
+    
+    --// Setup .luaurc
+    
     if not fs.isFile("./.luaurc") then
         fs.writeFile("./.luaurc", "{}");
     end
@@ -98,10 +81,6 @@ return function(argc: number, argv: {string}): number
     -- vscode settings --
     local vscode_settings = serde.decode("json", fs.readFile("./.vscode/settings.json"));
     vscode_settings["luau-lsp.require.directoryAliases"]["@lpm/"] = "./lpm_modules/";
-    vscode_settings["luau-lsp.types.definitionFiles"] = vscode_settings["luau-lsp.types.definitionFiles"] or {};
-
-    local pfx = if process.os == "windows" then process.env["USERPROFILE"] else "~";
-    table.insert(vscode_settings["luau-lsp.types.definitionFiles"], `{pfx}/.lpm/.typedefs/{_G.VERSION}/def.d.lua`);
     fs.writeFile("./.vscode/settings.json", serde.encode("json", vscode_settings, true))
 
     return 0;

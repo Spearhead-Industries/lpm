@@ -120,3 +120,19 @@ The resulting binary will be located in `./out`.
 |Option|Meaning|
 |---|---|
 |`--mkarchive`|Generates an aftman compatible `.zip` archive.|
+
+
+### Editing your Package Metadata: `edit`
+
+```bash
+lpm edit [OPERATION]
+```
+
+The `edit` command allows you to interact with your `lpm-package.toml` file safely, and allows you to perform the following operations;
+
+1. `version`
+2. `name`
+3. `description`
+4. `authors`
+5. `licence`
+6. `git-repo`
