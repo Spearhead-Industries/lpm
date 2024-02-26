@@ -2,3 +2,4 @@ Objectives for 1.1:
 - Wally/Rotriever compatibility
 - Exclude field in lpm-package.toml
 - Cleanup the code.
+- Version util commands.
