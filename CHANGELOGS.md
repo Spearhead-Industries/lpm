@@ -1,6 +1,6 @@
 # Changelogs
 
-## [1.1.0] - 25th Feburary 2024
+## [1.1.0] - 26th Feburary 2024
 
 ### Added
 
