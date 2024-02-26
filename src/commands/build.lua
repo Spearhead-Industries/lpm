@@ -14,8 +14,6 @@ return function(argc: number, argv: {string}): number
     local package = serde.decode("toml", fs.readFile("./lpm-package.toml"));
 
     if package.entrypoint and fs.isFile(package.entrypoint) then
-        --// Preamble //--
-
         local EXT = if process.os == "windows" then ".exe" else "";
         local BINARY_NAME = `./out/{package.name}`..EXT;
         local ARCHIVE_NAME = `./out/{package.name}-{process.os}-{process.arch}.zip`;
@@ -34,9 +32,6 @@ return function(argc: number, argv: {string}): number
             assert(process.spawn(cmd, {arg}).ok, `{cmd} must be installed.`);
         end
 
-
-        --// Check Env //--
-
         check("lune", "--version");
         check("darklua", "--version");
 
@@ -45,9 +40,6 @@ return function(argc: number, argv: {string}): number
         else
             check("zip", "--version");
         end
-
-
-        --// Build Steps //--
 
         if fs.isDir("./out") then
             fs.removeDir("./out");
