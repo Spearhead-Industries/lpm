@@ -115,6 +115,13 @@ The `build` command allows you to compile your package into a standalone executa
 
 The resulting binary will be located in `./out`.
 
+#### Options
+
+|Option|Meaning|
+|---|---|
+|`--mkarchive`|Generates an aftman compatible `.zip` archive.|
+
+
 ### Editing your Package Metadata: `edit`
 
 ```bash
@@ -129,9 +136,3 @@ The `edit` command allows you to interact with your `lpm-package.toml` file safe
 4. `authors`
 5. `licence`
 6. `git-repo`
-
-#### Options
-
-|Option|Meaning|
-|---|---|
-|`--mkarchive`|Generates an aftman compatible `.zip` archive.|
