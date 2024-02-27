@@ -1,4 +1,4 @@
-local VERSION = "1.2.0";
+local VERSION = "1.3.0";
 _G.VERSION = VERSION;
 
 local process = require("@lune/process");
