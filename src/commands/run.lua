@@ -12,20 +12,10 @@ return function(argc: number, argv: {string}): number
 
     --// Create a patched process builtin with new argv information.
 
-    local new_argv = {};
-    for i, v in ipairs(argv) do -- Shift 'lpm run' down.
-        new_argv[-1] = v;
-    end
+    table.remove(process.args, 1)
 
-    local patched_process = {};
-    for i, v in pairs(process) do
-        patched_process[i] = v;
-    end
-
-    table.freeze(new_argv);
-    
-    patched_process.args = new_argv;
-
+    --table.clear(process.args);
+    --for i, v in pairs(new_argv)
     
     --// Get package entrypoint and begin execution.
 
