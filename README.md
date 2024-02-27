@@ -54,6 +54,13 @@ aftman install
 # The executable should now be available in ./out/
 ```
 
+#### Why 'Lune-LPM'?
+
+We use a modified version of Lune to grant us access to some internal workings we wouldn't otherwise have access to. This helps make lpm easier to use. Changes to Lune are as follows;
+
+1. a `@lune/lpm` standalone was created with functions for handling standalone binaries.
+2. `process.args` was made mutable to allow lpm args to be removed before handing over to the entrypoint.
+
 ## Usage
 
 ### Creating a Package: `init`
