@@ -1,5 +1,11 @@
 # Changelogs
 
+## [1.3.0] - 27th Feburary 2024
+
+### Added
+
+- Linux support. Minimally tested so good luck.
+
 ## [1.2.0] - 27th Feburary 2024
 
 ### Added
