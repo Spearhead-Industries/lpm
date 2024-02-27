@@ -61,6 +61,8 @@ We use a modified version of Lune to grant us access to some internal workings w
 1. a `@lune/lpm` standalone was created with functions for handling standalone binaries.
 2. `process.args` was made mutable to allow lpm args to be removed before handing over to the entrypoint.
 
+LPM is not indended to be ran with the `lune run ...` / `lune-lpm run ...` notation, as such lune-lpm only exists to create the standalone for lpm.
+
 ## Usage
 
 ### Creating a Package: `init`
