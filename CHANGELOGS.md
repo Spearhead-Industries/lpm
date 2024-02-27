@@ -2,6 +2,11 @@
 
 ## [1.2.0] - 27th Feburary 2024
 
+### Added
+
+- `lpm` builtin with:
+  - `create_binary` function to create a standalone binary from within LuaU.
+
 ### Changes
 
 - Changed the internal build tool to use `lune-lpm` instead of vanilla lune.
