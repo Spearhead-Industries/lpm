@@ -13,6 +13,7 @@ return function(argc: number, argv: {string}): number
     --// Create a patched process builtin with new argv information.
 
     table.remove(process.args, 1)
+    table.freeze(process.args);
 
     --table.clear(process.args);
     --for i, v in pairs(new_argv)

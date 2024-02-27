@@ -33,7 +33,15 @@ aftman add --global Spearhead-Industries/lpm
 You can install from source with the following steps (assumes you have aftman installed):
 
 ```bash
+# Get the lune lpm fork
+git clone https://github.com/Spearhead-Industries/lune-lpm.git
+
+# Build
+cd lune-lpm
+cargo build
+
 # Download and CD into the repo
+cd ..
 git clone https://github.com/Spearhead-Industries/lpm.git
 cd lpm
 
@@ -41,7 +49,7 @@ cd lpm
 aftman install
 
 # Run the build script
-lune run ./scripts/build.lua
+../lune-lpm/target/debug/lune-lpm run ./scripts/build.lua
 
 # The executable should now be available in ./out/
 ```
