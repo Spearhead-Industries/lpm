@@ -1,4 +1,20 @@
+<!-- markdownlint-disable MD023 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
+
 # Changelogs
+
+## [1.3.0] - 27th Feburary 2024
+
+### Added
+
+- Added `lpm.is_standalone` function to the lpm builtin:
+  - Returns `true` if the script is being executed as a standalone, returns false otherwise.
+  - Although the `lpm` CLI is also a standalone lune programme, it will not be considered as one by this function.
+
+### Changes
+
+- `build` now carves out residual lpm bytecode in the resultant binary.
 
 ## [1.2.0] - 27th Feburary 2024
 
