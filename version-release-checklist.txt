@@ -1,0 +1,2 @@
+1. Have you bumped the version in main.lua?
+2. Is changelogs correct (i.e date, version and logs)?
