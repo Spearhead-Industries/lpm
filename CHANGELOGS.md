@@ -1,5 +1,14 @@
 # Changelogs
 
+## [1.2.0] - 27th Feburary 2024
+
+### Changes
+
+- Changed the internal build tool to use `lune-lpm` instead of vanilla lune.
+  - `lune-lpm` is a patch of lune to enable process.args to be mutated and to allow standalones to be built fron inside LuaU.
+
+- `run` now removes the first argument of process.args before handing over to the target script. This prevents 'run' from appearing in the target script's argument list.
+
 ## [1.1.0] - 26th Feburary 2024
 
 ### Added

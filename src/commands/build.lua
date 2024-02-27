@@ -2,6 +2,8 @@ local stdio = require("@lune/stdio");
 local serde = require("@lune/serde");
 local process = require("@lune/process");
 local fs = require("@lune/fs");
+local lpm = require("@lune/lpm");
+local luau = require("@lune/luau");
 
 local darklua_conf = [[{"bundle": {"require_mode": {"name":"path", "sources":{"@lpm":"./lpm_modules/"}, "module_folder_name":"init"},"excludes": ["@lune/**"]},"rules": []}]];
 
@@ -32,7 +34,7 @@ return function(argc: number, argv: {string}): number
             assert(process.spawn(cmd, {arg}).ok, `{cmd} must be installed.`);
         end
 
-        check("lune", "--version");
+        --check("lune", "--version");
         check("darklua", "--version");
 
         if process.os == "windows" then
@@ -50,8 +52,11 @@ return function(argc: number, argv: {string}): number
         fs.writeFile("./lpm_build_conf.json", darklua_conf);
 
         run(`darklua process -c ./lpm_build_conf.json {package.entrypoint} ./out/bundled.lua`);
-        run(`lune build ./out/bundled.lua -o {BINARY_NAME}`);
-
+        
+        local bytecode = luau.compile(fs.readFile("./out/bundled.lua"));
+        local binary = lpm.create_binary(bytecode);
+        fs.writeFile(BINARY_NAME, binary);
+        
         fs.removeFile("./lpm_build_conf.json");
 
         if table.find(process.args, "--mkarchive") ~= nil then
