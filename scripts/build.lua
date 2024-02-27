@@ -2,8 +2,6 @@
 
 local process = require("@lune/process");
 local fs = require("@lune/fs");
-local lpm = require("@lune/lpm");
-local luau = require("@lune/luau");
 
 local EXT = if process.os == "windows" then ".exe" else "";
 local BINARY_NAME = "./out/lpm"..EXT;
@@ -26,7 +24,7 @@ end
 
 --// Check Env //--
 
---check("lune", "--version");
+check("lune", "--version");
 check("darklua", "--version");
 
 if process.os == "windows" then
@@ -45,9 +43,7 @@ end
 fs.writeDir("./out");
 
 run("darklua process -c ./darklua.json ./src/main.lua ./out/bundled.lua");
-local bytecode = luau.compile(fs.readFile("./out/bundled.lua"));
-local binary = lpm.create_binary(bytecode);
-fs.writeFile(BINARY_NAME, binary);
+run(`lune build ./out/bundled.lua -o {BINARY_NAME}`);
 
 if table.find(process.args, "--noarchive") == nil then
     if process.os == "windows" then

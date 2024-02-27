@@ -33,7 +33,15 @@ aftman add --global Spearhead-Industries/lpm
 You can install from source with the following steps (assumes you have aftman installed):
 
 ```bash
+# Get the lune lpm fork
+git clone https://github.com/Spearhead-Industries/lune-lpm.git
+
+# Build
+cd lune-lpm
+cargo build
+
 # Download and CD into the repo
+cd ..
 git clone https://github.com/Spearhead-Industries/lpm.git
 cd lpm
 
@@ -41,7 +49,7 @@ cd lpm
 aftman install
 
 # Run the build script
-lune run ./scripts/build.lua
+../lune-lpm/target/debug/lune-lpm run ./scripts/build.lua
 
 # The executable should now be available in ./out/
 ```
@@ -136,3 +144,36 @@ The `edit` command allows you to interact with your `lpm-package.toml` file safe
 4. `authors`
 5. `licence`
 6. `git-repo`
+
+## Deviations from Standard Lune
+
+When using lpm to run or build, an additional builtin library is made available: `@lune/lpm`.
+
+This builtin exposes the following functions:-
+
+### create_binary
+
+```lua
+lpm.create_binary(bytecode: string): string
+```
+
+Creates a standalone lune binary from the provided bytecode.
+
+#### Example
+
+```lua
+local luau = require("@lune/luau");
+local lpm = require("@lune/lpm");
+local fs = require("@lune/fs");
+local process = require("@lune/process");
+
+local source = [[
+    print("Hello, World");
+]];
+
+local bytecode = luau.compile(source);
+local binary = lpm.create_binary(bytecode);
+fs.writeFile("./hi.exe", binary);
+local stdout = process.spawn("hi.exe").stdout;
+print(stdout); --> Hello, World
+```
