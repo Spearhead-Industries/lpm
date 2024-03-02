@@ -2,7 +2,7 @@ local is_lunelpm, lpm = pcall(require, "@lune/lpm");
 assert(is_lunelpm, `This must be built with Spearhead-Industries/lune-lpm, not lune-org/lune: {lpm}`);
 assert(lpm.is_lpm_standalone(), "Do not run lpm with the run command, build as a standalone instead.");
 
-local VERSION = "1.3.0";
+local VERSION = "1.3.1";
 _G.VERSION = VERSION;
 
 local process = require("@lune/process");
