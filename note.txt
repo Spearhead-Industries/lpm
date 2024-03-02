@@ -1,5 +1,12 @@
-Objectives for 1.1:
-- Wally/Rotriever compatibility
-- Exclude field in lpm-package.toml
-- Cleanup the code.
-- Util commands.
+Objectives for 1.4:
+- Command to generate wally/rotreiver package files.
+    - Won't attempt to upload to the index.
+- Scripts runner
+- Unit Testing
+- Add support for 'include' in the package metadata file.
+- Glob & Semver parsers for above filename fields
+- Workspaces
+- Only reinstall if hash is different than expected.
+
+Objectives down the line:
+- C library support with Wasynth 
