@@ -4,6 +4,12 @@
 
 # Changelogs
 
+## [1.3.1] - 2nd March 2024
+
+### Changes
+
+- Updated to use the new lune-lpm version, for net.createProxyClient.
+
 ## [1.3.0] - 27th Feburary 2024
 
 ### Added
