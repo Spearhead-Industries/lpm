@@ -2,26 +2,26 @@
 
 Objectives for 1.4:
 ===================
-- Scripts runner
-- Unit Testing
-- Add support for 'include' in the package metadata file.
-- Workspaces
-- Only reinstall if hash is different than expected.
-- Cross Compliation
 
 Objectives down the line:
 =========================
+- Cross Compliation
+- Only reinstall if hash is different than expected.
 - C library support with Wasynth?
 - Stop using darklua for bundling and instead opt to use an internal implementation.
+- Workspaces
+- Unit Testing
 
 In Progress:
 ============
-- Author as list.
-- Command to generate wally/rotreiver package files.
-    - Won't attempt to upload to the index.
 
 Completed Objectives:
 =====================
+- [1.4] Add support for 'include' in the package metadata file.
+- [1.4] Scripts runner
+- [1.4] Dependency aliases.
+- [1.4] Command to generate wally manifest files.
+- [1.4] Author as list. 
 - [1.4] Glob & Semver parsers for above filename fields
 - [1.1] Wally/Rotriever compatibility
 - [1.1] Exclude field in lpm-package.toml

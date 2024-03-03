@@ -8,6 +8,7 @@ local luau = require("@lune/luau");
 
 local darklua_conf = [[{"bundle": {"require_mode": {"name":"path", "sources":{"@lpm":"./lpm_modules/"}, "module_folder_name":"init"},"excludes": ["@lune/**"]},"rules": []}]];
 
+local util = require("../util");
 
 local function run(cmd: string)
     local parts = cmd:split(" ");
@@ -50,6 +51,8 @@ return function(argc: number, argv: {string}): number
         return 1;
     end
 
+    util.run_script("__prebuild");
+
     local package = serde.decode("toml", fs.readFile("./lpm-package.toml"));
 
     if package.entrypoint and fs.isFile(package.entrypoint) then
@@ -77,7 +80,10 @@ return function(argc: number, argv: {string}): number
         run(`darklua process -c ./lpm_build_conf.json {package.entrypoint} ./out/bundled.lua`);
         
         local bytecode = luau.compile(fs.readFile("./out/bundled.lua"));
-        local binary = remove_lpm_bytecode(lpm.create_binary(bytecode));
+        local binary = lpm.create_binary(bytecode);
+        pcall(function()
+            binary = remove_lpm_bytecode(binary);
+        end)
 
         fs.writeFile(BINARY_NAME, binary);
         
@@ -111,6 +117,8 @@ return function(argc: number, argv: {string}): number
         stdio.write("Entrypoint does not exist.");
         return 1;
     end
+
+    util.run_script("__postbuild");
 
     return 0;
 end

@@ -3,6 +3,7 @@ local serde = require("@lune/serde");
 local process = require("@lune/process");
 local fs = require("@lune/fs");
 
+
 return function(argc: number, argv: {string}): number
     if not fs.isFile("./lpm-package.toml") then
         stdio.write("No lpm-package.toml file found.\n");
