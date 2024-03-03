@@ -11,6 +11,8 @@ local stdio = require("@lune/stdio");
 function main(argc: number, argv: {string}): number
     local subcommand = argv[1];
 
+    (require("./commands/fix_compatability"))();
+
     if subcommand == "run" then -- Run the application.
         return (require("./commands/run"))(argc, argv);
 

@@ -4,9 +4,19 @@
 
 # Changelogs
 
+## [1.4.0] - !!!!????
+
+### Added
+
+### Changed
+
+- The LPM CLI now attempts to fix any compatability issues (see author changes).
+- `author` in the package manifest has now changed to `authors` (an array of authors).
+- `version` in the package manifest now must conform to semver.
+
 ## [1.3.1] - 2nd March 2024
 
-### Changes
+### Changed
 
 - Updated to use the new lune-lpm version, for net.createProxyClient.
 
@@ -18,7 +28,7 @@
   - Returns `true` if the script is being executed as a standalone, returns false otherwise.
   - Although the `lpm` CLI is also a standalone lune programme, it will not be considered as one by this function.
 
-### Changes
+### Changed
 
 - `build` now carves out residual lpm bytecode in the resultant binary.
 
@@ -29,7 +39,7 @@
 - `lpm` builtin with:
   - `create_binary` function to create a standalone binary from within LuaU.
 
-### Changes
+### Changed
 
 - Changed the internal build tool to use `lune-lpm` instead of vanilla lune.
   - `lune-lpm` is a patch of lune to enable process.args to be mutated and to allow standalones to be built fron inside LuaU.

@@ -35,23 +35,31 @@ function util.glob_to_lua_pattern(glob: string): string
         .."$";
 end
 
-function util.parse_semver(semver: string): {}
+type semver = {
+    valid: boolean,
+    major: number?,
+    minor: number?,
+    patch: number?,
+    prerelease_identifiers: {string}?,
+    build_identifiers: {string}?
+};
+function util.parse_semver(semver: string): semver
     local version_data = {};
 
     local VERSION_CORE = "%d+%.%d+%.%d+";
     local DOT_SEPERATED_IDENTIFIERS = "[%w.]+";
 
     version_data.valid = (
-                        string.match(semver, `^{VERSION_CORE}$`)
-                     or string.match(semver, `^{VERSION_CORE}%-{DOT_SEPERATED_IDENTIFIERS}$`)
-                     or string.match(semver, `^{VERSION_CORE}%+{DOT_SEPERATED_IDENTIFIERS}$`)
-                     or string.match(semver, `^{VERSION_CORE}%-{DOT_SEPERATED_IDENTIFIERS}+{DOT_SEPERATED_IDENTIFIERS}$`)
-                    ) ~= nil;
+        string.match(semver, `^{VERSION_CORE}$`)
+        or string.match(semver, `^{VERSION_CORE}%-{DOT_SEPERATED_IDENTIFIERS}$`)
+        or string.match(semver, `^{VERSION_CORE}%+{DOT_SEPERATED_IDENTIFIERS}$`)
+        or string.match(semver, `^{VERSION_CORE}%-{DOT_SEPERATED_IDENTIFIERS}+{DOT_SEPERATED_IDENTIFIERS}$`)
+    ) ~= nil;
 
     if version_data.valid then
-        version_data.major = string.match(semver, "^(%d+).*")
-        version_data.minor = string.match(semver, "^%d%.(%d+).*")
-        version_data.patch = string.match(semver, "^%d%.%d%.(%d+).*")
+        version_data.major = tonumber(string.match(semver, "^(%d+).*"))
+        version_data.minor = tonumber(string.match(semver, "^%d%.(%d+).*"))
+        version_data.patch = tonumber(string.match(semver, "^%d%.%d%.(%d+).*"))
         version_data.prerelease_identifiers = (string.match(semver, "^.*%-([%w.]+).*") or ""):split(".");
         version_data.build_identifiers = (string.match(semver, "^.*%+([%w.]+).*") or ""):split(".");
 
@@ -67,7 +75,7 @@ function util.parse_semver(semver: string): {}
     return version_data;
 end
 
-function util.pack_semver(parsed: {[any]: any}): string
+function util.pack_semver(parsed: semver): string
     local semver = "";
 
     semver ..= tostring(parsed.major) .. ".";
@@ -106,5 +114,34 @@ function util.semver_bump(semver: string, by: "major"|"minor"|"patch", dont_drop
 
     return util.pack_semver(parsed);
 end
+
+type package_id = {
+    valid: boolean?,
+    owner: string?,
+    name: string?,
+    ref: string?
+};
+
+function util.parse_package_id(package_id: string): package_id
+    -- <github-author>/<github-name>[@<ref>]
+
+    local CORE = "[%w%-]+/[%w%-_%.]";
+    local REF = "[%w%-%._/]"
+
+    local parsed = {};
+
+    parsed.valid = (
+            string.match(package_id, `^{CORE}$`)
+        or string.match(package_id, `^{CORE}@{REF}$`)
+    ) ~= nil;
+
+    if parsed.valid then
+        parsed.owner = string.match(package_id, "^([%w%-]+).*$")
+    end
+
+    return parsed;
+end
+
+print(util.parse_package_id("plainenglishh/lpm@1.0.0"))
 
 return util;

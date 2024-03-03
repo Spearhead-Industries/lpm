@@ -1,8 +1,7 @@
 !! Contrary to the POSIX standard, Globs *WILL* match dotfiles. !!
 
 Objectives for 1.4:
-- Command to generate wally/rotreiver package files.
-    - Won't attempt to upload to the index.
+===================
 - Scripts runner
 - Unit Testing
 - Add support for 'include' in the package metadata file.
@@ -11,9 +10,18 @@ Objectives for 1.4:
 - Cross Compliation
 
 Objectives down the line:
+=========================
 - C library support with Wasynth?
+- Stop using darklua for bundling and instead opt to use an internal implementation.
+
+In Progress:
+============
+- Author as list.
+- Command to generate wally/rotreiver package files.
+    - Won't attempt to upload to the index.
 
 Completed Objectives:
+=====================
 - [1.4] Glob & Semver parsers for above filename fields
 - [1.1] Wally/Rotriever compatibility
 - [1.1] Exclude field in lpm-package.toml
