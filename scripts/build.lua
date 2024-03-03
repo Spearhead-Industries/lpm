@@ -47,7 +47,7 @@ fs.writeDir("./out");
 run("darklua process -c ./darklua.json ./src/main.lua ./out/bundled.lua");
 local compiled = luau.compile(fs.readFile("./out/bundled.lua"), {
     optimizationLevel = 2,
-    debugLevel = 0,
+    debugLevel = 1,
     coverageLevel = 0
 });
 

@@ -1,3 +1,7 @@
+<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD001 -->
+
 <div align="center">
 
 # Lua Package Mananger (LPM)\*
@@ -137,7 +141,6 @@ The resulting binary will be located in `./out`.
 |Option|Meaning|
 |---|---|
 |`--mkarchive`|Generates an aftman compatible `.zip` archive.|
-
 
 ### Editing your Package Metadata: `edit`
 

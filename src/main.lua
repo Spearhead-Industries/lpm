@@ -2,19 +2,31 @@ local is_lunelpm, lpm = pcall(require, "@lune/lpm");
 assert(is_lunelpm, `This must be built with Spearhead-Industries/lune-lpm, not lune-org/lune: {lpm}`);
 assert(lpm.is_lpm_standalone(), "Do not run lpm with the run command, build as a standalone instead.");
 
-local VERSION = "1.3.1";
+local VERSION = "1.4.0";
 _G.VERSION = VERSION;
 
 local process = require("@lune/process");
 local stdio = require("@lune/stdio");
 
+local util = require("./util");
+
 function main(argc: number, argv: {string}): number
     local subcommand = argv[1];
+
+    util.run_script("__precli");
+
+    (require("./commands/fix_compatability"))(".");
 
     if subcommand == "run" then -- Run the application.
         return (require("./commands/run"))(argc, argv);
 
     elseif subcommand == "test" then -- Test the application.
+
+    elseif subcommand == "wally" then -- Test the application.
+        return (require("./commands/wally_manifest"))();
+
+    elseif subcommand == "script" then -- Test the application.
+        return (require("./commands/script"))(argc, argv);
 
     elseif subcommand == "build" then -- Build the application.
         return (require("./commands/build"))(argc, argv);

@@ -2,6 +2,8 @@ local stdio = require("@lune/stdio");
 local serde = require("@lune/serde");
 local fs = require("@lune/fs");
 
+local util = require("../util");
+
 return function(argc: number, argv: {string}): number
     if not fs.isFile("./lpm-package.toml") then
         stdio.write("No lpm-package.toml file found.\n");
@@ -15,11 +17,18 @@ return function(argc: number, argv: {string}): number
 
     for _, to_uninstall in pairs(uninstall_list) do
         local removed = false;
-        local i = table.find(root_package.dependencies, to_uninstall);
+        
+        local i;
+
+        for j, v in pairs(root_package.dependencies) do
+            if v == to_uninstall then
+                i = j;
+            end
+        end
 
         if i then
             removed = true;
-            table.remove(root_package.dependencies, i);
+            root_package.dependencies[i] = nil;
         end
 
         fs.writeFile("./lpm-package.toml", serde.encode("toml", root_package));
@@ -37,33 +46,7 @@ return function(argc: number, argv: {string}): number
         end
     end
 
-    local total_dep = root_package.dependencies;
-
-    for _, v in pairs(root_package.dependencies) do
-        v = v:gsub("%.", "-"):gsub("@", "-v"):gsub("/", "sSDGSDJG", 1):split("sSDGSDJG")[2];
-        if fs.isDir("./lpm_modules/"..v) and fs.isFile("./lpm_modules/"..v.."/lpm-package.toml") then
-            local pkg = serde.decode("toml", fs.readFile("./lpm_modules/"..v.."/lpm-package.toml"));
-            for _, dep in pairs(pkg.dependencies or {}) do
-                table.insert(total_dep, dep);
-            end
-        end
-    end
-
-    for _, v in pairs(fs.readDir("./lpm_modules")) do
-        local delete = true;
-
-        for _, dep in pairs(total_dep) do
-            local dir = dep:gsub("%.", "-"):gsub("@", "-v"):gsub("/", "sSDGSDJG", 1):split("sSDGSDJG")[2];
-            if v == dir then
-                delete = false;
-            end
-        end
-
-        if delete then
-            print(`Removed residual package {v}.`);
-            fs.removeDir("./lpm_modules/"..v)
-        end
-    end
+    util.clean_residual();
 
     return 0;
 end

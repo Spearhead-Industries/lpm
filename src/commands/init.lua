@@ -3,6 +3,8 @@ local serde = require("@lune/serde");
 local process = require("@lune/process");
 local fs = require("@lune/fs");
 
+local util = require("../util");
+
 local function nil_if_empty(text: string): string?
     if text == "" then
         return nil; 
@@ -31,11 +33,23 @@ return function(argc: number, argv: {string}): number
     local package_file = {};
 
     package_file.name = stdio.prompt("text", "Package Name",  dir[#dir-1]);
-    package_file.version = stdio.prompt("text", "Version", "1.0.0");
+    
+    local function try_version()
+        local semver = stdio.prompt("text", "Version", "1.0.0");
+        
+        if util.parse_semver(semver).valid then
+            package_file.version = semver;
+        else
+            stdio.ewrite("Invalid Semver.\n");
+            try_version();
+        end
+    end
+    try_version();
+    
     package_file.description = stdio.prompt("text", "Description");
     package_file.entrypoint = stdio.prompt("text", "Entrypoint", "./src/main.lua");
     package_file.repository = stdio.prompt("text", "Git Repository");
-    package_file.author = stdio.prompt("text", "Author(s)");
+    package_file.authors = stdio.prompt("text", "Author(s) (Seperated by ;)"):split(";");
     package_file.licence = stdio.prompt("text", "Licence", "MIT");
     package_file.dependencies = {};
     package_file.exclude = {"docs"};

@@ -4,9 +4,41 @@
 
 # Changelogs
 
+## [1.4.0] - !!!!????
+
+### Added
+
+- Added an `include` field to the manifest files.
+  - Any files not specified in the include field, if it exists, will be removed.
+  - `lpm-package.toml` is immunte to include.
+  - Due to the way globs are parsed, `src` refers to *only* the directory and `src/**` refers to *only* the children of the directory. As such, both are required to keep a directory. Irritating, yes, I know, but when I can get around to reworking the glob parser, ill fix it. Same applies to `exclude`.
+- Added `script` command to create and run scripts.
+  - Scripts can either be luau or shell scripts.
+  - Shell scripts are defined in the package manifest, whereas luau scripts are `.lua` files within `./scripts`.
+  - `script new <name>` can be used to create new luau scripts.
+  - `script run <name>` can be used to run a script. It will check for a shell script first, and check for a lua script if no shell script is found.
+  - A set of builtin scripts are defined to 'hook' into lpm processes;
+    - `__precli` runs when `lpm` is ran,
+    - `__prebuild` runs prior to building,
+    - `__postbuild` runs after building (if successful),
+    - `__setup` runs if `install` is called with no arguments.
+- Added install package aliases.
+  - Packages can be installed under a different name by adding "=name" to the end of the package during install: `lpm install plainenglishh/router=thisisthealias`.
+  - When uninstalling, it will check for the proper name of the package.
+  - When requiring, it will look for the alias.
+  - This is an expermiental feature.
+- Added `wally` command to generate a `wally.toml` compatible manifest file from the `lpm-package.toml` manifest file.
+
+### Changed
+
+- The LPM CLI now attempts to fix any compatability issues (see author changes).
+- `author` in the package manifest has now changed to `authors` (an array of authors).
+- `version` in the package manifest now must conform to semver.
+- `exclude` now uses globs instead of absolute paths.
+
 ## [1.3.1] - 2nd March 2024
 
-### Changes
+### Changed
 
 - Updated to use the new lune-lpm version, for net.createProxyClient.
 
@@ -18,7 +50,7 @@
   - Returns `true` if the script is being executed as a standalone, returns false otherwise.
   - Although the `lpm` CLI is also a standalone lune programme, it will not be considered as one by this function.
 
-### Changes
+### Changed
 
 - `build` now carves out residual lpm bytecode in the resultant binary.
 
@@ -29,7 +61,7 @@
 - `lpm` builtin with:
   - `create_binary` function to create a standalone binary from within LuaU.
 
-### Changes
+### Changed
 
 - Changed the internal build tool to use `lune-lpm` instead of vanilla lune.
   - `lune-lpm` is a patch of lune to enable process.args to be mutated and to allow standalones to be built fron inside LuaU.

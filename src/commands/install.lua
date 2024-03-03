@@ -68,46 +68,75 @@ return function(argc: number, argv: {string}): number
     end
 
     local root_package = serde.decode("toml", fs.readFile("./lpm-package.toml"));
-    local install_list = table.clone(argv);
-    table.remove(install_list, 1);
+    local args = table.clone(argv);
+    table.remove(args, 1);
+
+    local install_list = {};
+
+    for i, v in pairs(args) do
+        if v:match("^.-=.-$") ~= nil then
+            table.insert(install_list, {
+                dep = v:match("^(.-)=.-$"),
+                alias = v:match("^.-=(.-)$");
+            });
+        else
+            table.insert(install_list, {
+                dep = v,
+                alias = v;
+            });
+        end
+    end
 
 
     if not fs.isDir("./lpm_modules") then
         fs.writeDir("./lpm_modules");
     end
 
-    local function install(dependency: string, add_to_root_dep: boolean, extra: string?)
-        local message_prefix = "I";
-    
+    local function install(dependency: string, add_to_root_dep: boolean, extra: string?, alias: string?)
+        for i, v in pairs(root_package.dependencies) do
+            if i == alias and v ~= dependency then
+                print(`  {stdio.color("red")}Skipped{stdio.color("reset")} '{dependency}' (already a package aliased to {alias})`)
+                return;
+            end
+        end
+
+        for i, v in pairs(root_package.dependencies) do
+            if i ~= alias and v == dependency and alias ~= nil then
+                print(`  {stdio.color("red")}Skipped{stdio.color("reset")} '{dependency}' (already installed as {alias})`)
+                return;
+            end
+        end
+
+        local message_prefix = "  I";
 
         --// Parse the package identifier into it's compononents.
 
-        local name_componenets = dependency:split("/");
-        local author = name_componenets[1];
-        local rawname = name_componenets[2];
+        local identifier = util.parse_package_id(dependency);
+        local owner = identifier.owner;
+        local name = identifier.name;
+        local ref = identifier.ref;
         
-        local ref = rawname:split("@")[2];
-        if not ref then
-            rawname..="@a"; -- if it works, it works.
-        end
-
-        local name = rawname:split("@")[1]
-
 
         --// Construct the URL and Dir name.
 
-        local repo_url = "https://github.com/"..author.."/"..name..".git";
+        local repo_url = "https://github.com/"..owner.."/"..name..".git";
 
-        local dir_name = name;
-        if ref then
-            dir_name = (dir_name.."-v"..ref):gsub("%.", "-");
-        end
+        local dir_name = alias or util.dir_safe(dependency);
+        --print(alias, dir_name)
 
         
         --// Add the dependency to the package file.
 
-        if not table.find(root_package.dependencies, dependency) and add_to_root_dep then
-            table.insert(root_package.dependencies, dependency);
+        local is_dependency = false;
+
+        for _, v in pairs(root_package.dependencies) do
+            if v == dependency then
+                is_dependency = true;
+            end
+        end
+
+        if not is_dependency then
+            root_package.dependencies[alias or dependency] = dependency;
         end
 
         fs.writeFile("./lpm-package.toml", serde.encode("toml", root_package))
@@ -116,18 +145,19 @@ return function(argc: number, argv: {string}): number
         --// Remove previous version
 
         if fs.isDir(`./lpm_modules/{dir_name}/`) then
-            message_prefix = "Rei";
+            message_prefix = "  Rei";
             fs.removeDir(`./lpm_modules/{dir_name}/`);
         end
     
 
         --// Notify the user the package is being downloaded.
-        
+
         local remove;
         remove = util.removable_text(
-            stdio.color("yellow")
+            stdio.color("blue")
             ..message_prefix
             ..`nstalling{stdio.color("reset")} '{dependency}'`
+            .. if alias ~= dependency and alias ~= nil then ` as {alias}` else ""
             .. if extra then ` ({extra})` else ""
         );
 
@@ -153,33 +183,57 @@ return function(argc: number, argv: {string}): number
             fs.removeDir(`./lpm_modules/{dir_name}/.git`);
             local dep_p = get_metadata(`./lpm_modules/{dir_name}/`);
 
+            local include = (dep_p or {}).include or {"**"};
+            table.insert(include, "lpm-package.toml");
+
+            local exclude = (dep_p or {}).exclude or {};
+
+            local files_to_include = {};
+
+            for i, v in pairs(include) do
+                for _, file in pairs(util.get_files(`/lpm_modules/{dir_name}/{v}`)) do
+                    table.insert(files_to_include, file);
+                end
+            end
+
+            for i, v in pairs(util.get_files(`/lpm_modules/{dir_name}/**`)) do
+                if not table.find(files_to_include, v) then
+                    --print("I would remove", v)
+                    if fs.isFile(v) then 
+                        fs.removeFile(v);
+                    elseif fs.isDir(v) then
+                        fs.removeDir(v);
+                    end
+                end
+            end
+
+            for i, v in pairs(exclude) do
+                for _, file in pairs(util.get_files(`/lpm_modules/{dir_name}/{v}`)) do
+                    --print("I would remove", file)
+                    if fs.isFile(file) then 
+                        fs.removeFile(file);
+                    elseif fs.isDir(file) then
+                        fs.removeDir(file);
+                    end
+                end
+            end
+
             if dep_p and dep_p.entrypoint then
                 fs.writeFile(`./lpm_modules/{dir_name}/init.lua`, `return require("{dep_p.entrypoint}")`);
             else
                 extra = "no package file found, use with caution"..(extra and "; "..extra or "");
             end
+
+            (require("../commands/fix_compatability"))(`./lpm_modules/{dir_name}/`);
             
             remove();
             print(
                 stdio.color("green")
                 ..message_prefix
                 ..`nstalled{stdio.color("reset")} '{dependency}'`
+                .. if alias ~= dependency and alias ~= nil then ` as {alias}` else ""
                 .. if extra then ` ({extra})` else ""
             );
-
-            local exclude = (dep_p or {}).exclude or {};
-
-            for i, v in pairs(exclude) do
-                local path = `./lpm_modules/{dir_name}/`..v:gsub("%.%.", ".");
-                --print(path);
-                if fs.isFile(path) or fs.isDir(path) then
-                    if fs.isFile(path) then
-                        fs.removeFile(path);
-                    else
-                        fs.removeDir(path);
-                    end
-                end
-            end
 
             for i, v in pairs((dep_p or {}).dependencies or {}) do
                 local already_have = table.find(root_package.dependencies, v);
@@ -191,42 +245,19 @@ return function(argc: number, argv: {string}): number
     end
 
     if #install_list > 0 then
-        for _, dependency in pairs(install_list) do
-            install(dependency, true);
+        for _, info in pairs(install_list) do
+            local dependency = info.dep;
+            local alias = info.alias;
+            install(dependency, true, nil, if alias == dependency then nil else alias);
         end
     else -- Install project dependencies
-        for _, dependency in pairs(root_package.dependencies or {}) do
-            install(dependency, false);
+        util.run_script("__setup");
+        for alias, dependency in pairs(root_package.dependencies or {}) do
+            install(dependency, false, nil, if alias == dependency then nil else alias);
         end
     end
 
-    local total_dep = root_package.dependencies;
-
-    for _, v in pairs(root_package.dependencies) do
-        v = v:gsub("%.", "-"):gsub("@", "-v"):gsub("/", "sSDGSDJG", 1):split("sSDGSDJG")[2];
-        if fs.isDir("./lpm_modules/"..v) and fs.isFile("./lpm_modules/"..v.."/lpm-package.toml") then
-            local pkg = serde.decode("toml", fs.readFile("./lpm_modules/"..v.."/lpm-package.toml"));
-            for _, dep in pairs(pkg.dependencies or {}) do
-                table.insert(total_dep, dep);
-            end
-        end
-    end
-
-    for _, v in pairs(fs.readDir("./lpm_modules")) do
-        local delete = true;
-
-        for _, dep in pairs(total_dep) do
-            local dir = dep:gsub("%.", "-"):gsub("@", "-v"):gsub("/", "sSDGSDJG", 1):split("sSDGSDJG")[2];
-            if v == dir then
-                delete = false;
-            end
-        end
-
-        if delete then
-            print(`Removed residual package {v}.`);
-            fs.removeDir("./lpm_modules/"..v)
-        end
-    end
+    util.clean_residual();
 
     return 0;
 end
