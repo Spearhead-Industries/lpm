@@ -47,12 +47,13 @@ return function(argc: number, argv: {string}): number
     try_version();
     
     package_file.description = stdio.prompt("text", "Description");
-    package_file.entrypoint = stdio.prompt("text", "Entrypoint", "./src/main.lua");
+    package_file.entrypoint = stdio.prompt("text", "Entrypoint", "./src/init.lua");
     package_file.repository = stdio.prompt("text", "Git Repository");
     package_file.authors = stdio.prompt("text", "Author(s) (Seperated by ;)"):split(";");
     package_file.licence = stdio.prompt("text", "Licence", "MIT");
     package_file.dependencies = {};
     package_file.exclude = {"docs"};
+    package_file.scripts = {};
 
     local file = serde.encode("toml", package_file);
 

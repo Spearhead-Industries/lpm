@@ -24,7 +24,10 @@ return function(argc: number, argv: {string}): number
     local package = serde.decode("toml", fs.readFile("./lpm-package.toml"));
 
     if package.entrypoint and fs.isFile(package.entrypoint) then    
-        require(package.entrypoint); -- Consider converting to a lune run call. Issues with stdin however.
+        local main = require(package.entrypoint); -- Consider converting to a lune run call. Issues with stdin however.
+        if main and typeof(main) == "function" then
+            return main(#process.args, process.args);
+        end
     else
         stdio.write("Entrypoint does not exist.");
         return 1;

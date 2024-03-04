@@ -4,7 +4,25 @@
 
 # Changelogs
 
-## [1.4.0] - !!!!????
+## [1.4.1] - 4th March 2024
+
+### Added
+
+- Added 'main' functions, where if the entrypoint returns a function the run command will call it.
+  - The main function will be passed two arguments;
+    - `argc: number` - The number of arguments.
+    - `argv: {string}` - A list of command line arguments.
+  - The main function allows for a single return value;
+    - `exit_code: number?` - The exit code of the script. It will be assumed to be 0 if not present.
+
+### Changed
+
+- `init` command will suggest `./src/init.lua` as an entrypoint instead of `./src/main.lua`.
+- Compatability checker will run prior to the __precli script is called.
+- Fixed bug with the `init` command where a new manifest wouldn't be given a 'scripts'
+section.
+
+## [1.4.0] - 3rd March 2024
 
 ### Added
 
